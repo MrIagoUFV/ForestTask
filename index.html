@@ -186,6 +186,43 @@
       background-color: #ff4444;
       color: white;
     }
+
+    @media (min-width: 768px) {
+      #app {
+        max-width: 100%;
+        padding: 20px;
+      }
+
+      .eisenhower-matrix {
+        display: flex;
+        flex-direction: row;
+        height: auto;
+        margin: 20px 0;
+      }
+
+      .matrix-section {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #eee;
+        margin: 0 5px;
+        border-radius: 12px;
+      }
+
+      .task-list-container {
+        display: none;
+      }
+
+      .desktop-matrix-container {
+        display: flex;
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .desktop-matrix-container {
+        display: none;
+      }
+    }
   </style>
 </head>
 <body>
@@ -454,6 +491,52 @@
         );
       };
 
+      const renderDesktopEisenhowerMatrix = () => {
+        const matrixSections = [
+          { title: "Prioridade", key: "priority", className: "priority" },
+          { title: "Necessário", key: "necessary", className: "necessary" },
+          { title: "Adiável", key: "postponable", className: "postponable" },
+          { title: "Descartável", key: "disposable", className: "disposable" },
+        ];
+
+        return (
+          <div className="eisenhower-matrix">
+            {matrixSections.map(section => (
+              <div key={section.key} className={`matrix-section ${section.className}`}>
+                <h3 className={section.className}>{section.title}</h3>
+                {tasks
+                  .filter(task => task.priority === section.key)
+                  .map((task, index) => (
+                    <div 
+                      key={index} 
+                      className={`task-item ${task.completed ? 'completed' : ''} ${section.className} ${selectedTaskIndex === tasks.indexOf(task) ? 'show-actions' : ''}`}
+                      onClick={() => handleTaskClick(tasks.indexOf(task))}
+                    >
+                      <Checkbox
+                        checked={task.completed}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          handleTaskCompletion(tasks.indexOf(task));
+                        }}
+                        color="primary"
+                      />
+                      <ListItemText primary={task.name} />
+                      <div className="task-actions">
+                        <button className="task-action-button edit-button" onClick={(e) => { e.stopPropagation(); handleEditTask(tasks.indexOf(task)); }}>
+                          <span className="material-icons">edit</span>
+                        </button>
+                        <button className="task-action-button delete-button" onClick={(e) => { e.stopPropagation(); handleDeleteTask(tasks.indexOf(task)); }}>
+                          <span className="material-icons">delete</span>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            ))}
+          </div>
+        );
+      };
+
       return (
         <ThemeProvider theme={theme}>
           <div>
@@ -484,6 +567,10 @@
               <div className="task-list">
                 {showEisenhowerMatrix ? renderEisenhowerMatrix() : renderTaskList()}
               </div>
+            </div>
+
+            <div className="desktop-matrix-container">
+              {renderDesktopEisenhowerMatrix()}
             </div>
             
             <div className="progress-bar">
