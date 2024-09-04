@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Green Task Forest - Gerenciador de Tarefas Gamificado</title>
+  <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://unpkg.com/@material-ui/core@latest/umd/material-ui.development.js"></script>
+  <style>
+    /* Estilos globais */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+      background-color: #f0f4f0;
+      color: #2c3e50;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh; 
+    }
+
+    #app { 
+      width: 100%;
+      max-width: 400px; 
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Estilos existentes... */
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #app {
+      padding: 20px;
+    }
+    .top-bar {
+      background-color: #4a6741;
+      color: #f0f4f0;
+      padding: 15px;
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .top-bar span {
+      font-size: 1.1em;
+      font-weight: 500;
+    }
+    .main-buttons {
+      display: flex;
+      justify-content: space-around;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .plant-area {
+      text-align: center;
+      font-size: 5em;
+      margin: 20px 0;
+      cursor: pointer;
+    }
+    .progress-bar {
+      background-color: #dcdcdc;
+      border-radius: 12px;
+      height: 20px;
+      margin-top: 20px;
+      overflow: hidden;
+    }
+    .progress {
+      background-color: #228b22;
+      height: 100%;
+      border-radius: 12px;
+      transition: width 0.5s ease-in-out;
+    }
+    .task-list-container {
+      flex-grow: 1;
+      overflow: hidden;
+      position: relative;
+      margin-top: 20px;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .task-list {
+      height: 240px;
+      overflow-y: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .task-list::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+    }
+    .task-item {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+      height: 60px;
+      position: relative;
+      overflow: hidden;
+    }
+    .task-item:last-child {
+      border-bottom: none;
+    }
+    .task-item.completed {
+      text-decoration: line-through;
+      color: #888;
+    }
+    .empty-task {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ccc;
+      font-style: italic;
+    }
+    .eisenhower-matrix {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .matrix-section {
+      flex: 1;
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    .matrix-section:last-child {
+      border-bottom: none;
+    }
+    .matrix-section h3 {
+      margin-top: 0;
+      padding: 5px;
+      border-radius: 5px;
+    }
+    .priority {
+      color: #d32f2f;
+      background-color: rgba(211, 47, 47, 0.1);
+    }
+    .necessary {
+      color: #1976d2;
+      background-color: rgba(25, 118, 210, 0.1);
+    }
+    .postponable {
+      color: #388e3c;
+      background-color: rgba(56, 142, 60, 0.1);
+    }
+    .disposable {
+      color: #757575;
+      background-color: rgba(117, 117, 117, 0.1);
+    }
+    .task-actions {
+      position: absolute;
+      right: -100px;
+      top: 0;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      transition: right 0.3s ease-in-out;
+    }
+    .task-item.show-actions .task-actions {
+      right: 0;
+    }
+    .task-action-button {
+      padding: 8px;
+      margin-left: 5px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+    }
+    .edit-button {
+      background-color: white;
+      color: #333;
+    }
+    .delete-button {
+      background-color: #ff4444;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script type="text/babel">
+    const {
+      Button,
+      IconButton,
+      Dialog,
+      DialogTitle,
+      DialogContent,
+      DialogActions,
+      TextField,
+      List,
+      ListItem,
+      ListItemText,
+      Checkbox,
+      makeStyles,
+      ThemeProvider,
+      createTheme,
+      Snackbar,
+      Select,
+      MenuItem,
+      FormControl,
+      InputLabel,
+    } = MaterialUI;
+
+    const theme = createTheme({
+      palette: {
+        primary: {
+          main: '#6b8e23',
+        },
+        secondary: {
+          main: '#4CAF50',
+        },
+      },
+    });
+
+    const useStyles = makeStyles((theme) => ({
+      button: {
+        margin: theme.spacing(1),
+      },
+      completeButton: {
+        margin: theme.spacing(1),
+        backgroundColor: theme.palette.secondary.main,
+        '&:hover': {
+          backgroundColor: theme.palette.secondary.dark,
+        },
+      },
+      formControl: {
+        margin: theme.spacing(1),
+        minWidth: 120,
+      },
+    }));
+
+    const App = () => {
+      const classes = useStyles();
+      const [level, setLevel] = React.useState(1);
+      const [day, setDay] = React.useState(1);
+      const [streak, setStreak] = React.useState(0);
+      const [progress, setProgress] = React.useState(0);
+      const [tasks, setTasks] = React.useState([]);
+      const [openAddDialog, setOpenAddDialog] = React.useState(false);
+      const [openEditDialog, setOpenEditDialog] = React.useState(false);
+      const [editingTask, setEditingTask] = React.useState(null);
+      const [newTask, setNewTask] = React.useState("");
+      const [newTaskPriority, setNewTaskPriority] = React.useState("priority");
+      const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+      const [snackbarMessage, setSnackbarMessage] = React.useState("");
+      const [showEisenhowerMatrix, setShowEisenhowerMatrix] = React.useState(false);
+      const [selectedTaskIndex, setSelectedTaskIndex] = React.useState(null);
+
+      const plantStages = ['🌱', '🌿', '🌳'];
+
+      const getCurrentPlant = () => {
+        if (progress < 50) return plantStages[0];
+        if (progress < 100) return plantStages[1];
+        return plantStages[2];
+      };
+
+      const handleAddTask = () => {
+        setOpenAddDialog(true);
+      };
+
+      const handleCloseAddDialog = () => {
+        setOpenAddDialog(false);
+        setNewTask("");
+        setNewTaskPriority("priority");
+      };
+
+      const handleSaveTask = () => {
+        if (newTask.trim()) {
+          setTasks([...tasks, { name: newTask, completed: false, priority: newTaskPriority }]);
+          handleCloseAddDialog();
+          updateProgress();
+        }
+      };
+
+      const handleTaskCompletion = (index) => {
+        const updatedTasks = [...tasks];
+        updatedTasks[index].completed = !updatedTasks[index].completed;
+        setTasks(updatedTasks);
+        updateProgress();
+      };
+
+      const updateProgress = () => {
+        const relevantTasks = tasks.filter(task => task.priority === 'priority' || task.priority === 'necessary');
+        const completedRelevantTasks = relevantTasks.filter(task => task.completed).length;
+        const totalRelevantTasks = relevantTasks.length;
+        const newProgress = totalRelevantTasks > 0 ? Math.round((completedRelevantTasks / totalRelevantTasks) * 100) : 0;
+        setProgress(newProgress);
+      };
+
+      const handleCompleteDay = () => {
+        const relevantTasks = tasks.filter(task => task.priority === 'priority' || task.priority === 'necessary');
+        const allRelevantTasksCompleted = relevantTasks.length > 0 && relevantTasks.every(task => task.completed);
+        
+        if (allRelevantTasksCompleted) {
+          setStreak(s => s + 1);
+          setDay(d => d + 1);
+          if ((streak + 1) % 5 === 0) {
+            setLevel(l => l + 1);
+          }
+          setProgress(0);
+          setTasks([]);
+          setSnackbarMessage("Parabéns! Você completou todas as tarefas prioritárias e necessárias do dia!");
+        } else {
+          setLevel(1);
+          setStreak(0);
+          setProgress(0);
+          setTasks([]);
+          setDay(d => d + 1);
+          setSnackbarMessage("Você não completou todas as tarefas prioritárias e necessárias. O jogo foi reiniciado, mas o dia continua avançando.");
+        }
+        setSnackbarOpen(true);
+      };
+
+      const handleCloseSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+        setSnackbarOpen(false);
+      };
+
+      const handleTaskClick = (index) => {
+        setSelectedTaskIndex(selectedTaskIndex === index ? null : index);
+      };
+
+      const handleEditTask = (index) => {
+        setEditingTask(tasks[index]);
+        setNewTask(tasks[index].name);
+        setNewTaskPriority(tasks[index].priority);
+        setOpenEditDialog(true);
+      };
+
+      const handleCloseEditDialog = () => {
+        setOpenEditDialog(false);
+        setEditingTask(null);
+        setNewTask("");
+        setNewTaskPriority("priority");
+      };
+
+      const handleSaveEditTask = () => {
+        if (newTask.trim() && editingTask) {
+          const updatedTasks = tasks.map((task, index) =>
+            index === tasks.indexOf(editingTask)
+              ? { ...task, name: newTask, priority: newTaskPriority }
+              : task
+          );
+          setTasks(updatedTasks);
+          handleCloseEditDialog();
+          updateProgress();
+        }
+      };
+
+      const handleDeleteTask = (index) => {
+        const updatedTasks = tasks.filter((_, i) => i !== index);
+        setTasks(updatedTasks);
+        updateProgress();
+      };
+
+      const renderTaskList = () => {
+        const taskItems = tasks.map((task, index) => (
+          <div 
+            key={index} 
+            className={`task-item ${task.completed ? 'completed' : ''} ${task.priority} ${selectedTaskIndex === index ? 'show-actions' : ''}`}
+            onClick={() => handleTaskClick(index)}
+          >
+            <Checkbox
+              checked={task.completed}
+              onChange={(e) => {
+                e.stopPropagation();
+                handleTaskCompletion(index);
+              }}
+              color="primary"
+            />
+            <ListItemText primary={task.name} />
+            <div className="task-actions">
+              <button className="task-action-button edit-button" onClick={(e) => { e.stopPropagation(); handleEditTask(index); }}>
+                <span className="material-icons">edit</span>
+              </button>
+              <button className="task-action-button delete-button" onClick={(e) => { e.stopPropagation(); handleDeleteTask(index); }}>
+                <span className="material-icons">delete</span>
+              </button>
+            </div>
+          </div>
+        ));
+
+        const emptyTasks = Array(Math.max(0, 4 - taskItems.length)).fill().map((_, index) => (
+          <div key={`empty-${index}`} className="empty-task">
+            Tarefa vazia
+          </div>
+        ));
+
+        return [...taskItems, ...emptyTasks];
+      };
+
+      const toggleEisenhowerMatrix = () => {
+        setShowEisenhowerMatrix(!showEisenhowerMatrix);
+      };
+
+      const renderEisenhowerMatrix = () => {
+        const matrixSections = [
+          { title: "Prioridade", key: "priority", className: "priority" },
+          { title: "Necessário", key: "necessary", className: "necessary" },
+          { title: "Adiável", key: "postponable", className: "postponable" },
+          { title: "Descartável", key: "disposable", className: "disposable" },
+        ];
+
+        return (
+          <div className="eisenhower-matrix">
+            {matrixSections.map(section => (
+              <div key={section.key} className={`matrix-section ${section.className}`}>
+                <h3 className={section.className}>{section.title}</h3>
+                {tasks
+                  .filter(task => task.priority === section.key)
+                  .map((task, index) => (
+                    <div 
+                      key={index} 
+                      className={`task-item ${task.completed ? 'completed' : ''} ${section.className} ${selectedTaskIndex === tasks.indexOf(task) ? 'show-actions' : ''}`}
+                      onClick={() => handleTaskClick(tasks.indexOf(task))}
+                    >
+                      <Checkbox
+                        checked={task.completed}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          handleTaskCompletion(tasks.indexOf(task));
+                        }}
+                        color="primary"
+                      />
+                      <ListItemText primary={task.name} />
+                      <div className="task-actions">
+                        <button className="task-action-button edit-button" onClick={(e) => { e.stopPropagation(); handleEditTask(tasks.indexOf(task)); }}>
+                          <span className="material-icons">edit</span>
+                        </button>
+                        <button className="task-action-button delete-button" onClick={(e) => { e.stopPropagation(); handleDeleteTask(tasks.indexOf(task)); }}>
+                          <span className="material-icons">delete</span>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            ))}
+          </div>
+        );
+      };
+
+      return (
+        <ThemeProvider theme={theme}>
+          <div>
+            <div className="top-bar">
+              <span>Nível: {level}</span>
+              <span>Dia: {day}</span>
+              <span>🌳: {streak}</span>
+            </div>
+            
+            <div className="main-buttons">
+              <IconButton color="primary" className={classes.button} onClick={handleAddTask}>
+                <span className="material-icons">add_task</span>
+              </IconButton>
+              <IconButton 
+                color="secondary"
+                className={classes.completeButton}
+                onClick={handleCompleteDay}
+              >
+                <span className="material-icons">check_circle</span>
+              </IconButton>
+            </div>
+            
+            <div className="plant-area" onClick={toggleEisenhowerMatrix}>
+              {getCurrentPlant()}
+            </div>
+            
+            <div className="task-list-container">
+              <div className="task-list">
+                {showEisenhowerMatrix ? renderEisenhowerMatrix() : renderTaskList()}
+              </div>
+            </div>
+            
+            <div className="progress-bar">
+              <div className="progress" style={{width: `${progress}%`}}></div>
+            </div>
+
+            <Dialog open={openAddDialog} onClose={handleCloseAddDialog}>
+              <DialogTitle>Adicionar Nova Tarefa</DialogTitle>
+              <DialogContent>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  id="name"
+                  label="Nome da Tarefa"
+                  type="text"
+                  fullWidth
+                  value={newTask}
+                  onChange={(e) => setNewTask(e.target.value)}
+                />
+                <FormControl className={classes.formControl}>
+                  <InputLabel id="task-priority-label">Classificação</InputLabel>
+                  <Select
+                    labelId="task-priority-label"
+                    id="task-priority"
+                    value={newTaskPriority}
+                    onChange={(e) => setNewTaskPriority(e.target.value)}
+                  >
+                    <MenuItem value="priority">Prioridade</MenuItem>
+                    <MenuItem value="necessary">Necessário</MenuItem>
+                    <MenuItem value="postponable">Adiável</MenuItem>
+                    <MenuItem value="disposable">Descartável</MenuItem>
+                  </Select>
+                </FormControl>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleCloseAddDialog} color="primary">
+                  Cancelar
+                </Button>
+                <Button onClick={handleSaveTask} color="primary">
+                  Adicionar
+                </Button>
+              </DialogActions>
+            </Dialog>
+
+            <Dialog open={openEditDialog} onClose={handleCloseEditDialog}>
+              <DialogTitle>Editar Tarefa</DialogTitle>
+              <DialogContent>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  id="name"
+                  label="Nome da Tarefa"
+                  type="text"
+                  fullWidth
+                  value={newTask}
+                  onChange={(e) => setNewTask(e.target.value)}
+                />
+                <FormControl className={classes.formControl}>
+                  <InputLabel id="task-priority-label">Classificação</InputLabel>
+                  <Select
+                    labelId="task-priority-label"
+                    id="task-priority"
+                    value={newTaskPriority}
+                    onChange={(e) => setNewTaskPriority(e.target.value)}
+                  >
+                    <MenuItem value="priority">Prioridade</MenuItem>
+                    <MenuItem value="necessary">Necessário</MenuItem>
+                    <MenuItem value="postponable">Adiável</MenuItem>
+                    <MenuItem value="disposable">Descartável</MenuItem>
+                  </Select>
+                </FormControl>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleCloseEditDialog} color="primary">
+                  Cancelar
+                </Button>
+                <Button onClick={handleSaveEditTask} color="primary">
+                  Salvar
+                </Button>
+              </DialogActions>
+            </Dialog>
+
+            <Snackbar
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+              }}
+              open={snackbarOpen}
+              autoHideDuration={6000}
+              onClose={handleCloseSnackbar}
+              message={snackbarMessage}
+              action={
+                <React.Fragment>
+                  <IconButton
+                    size="small"
+                    aria-label="close"
+                    color="inherit"
+                    onClick={handleCloseSnackbar}
+                  >
+                    <span className="material-icons">close</span>
+                  </IconButton>
+                </React.Fragment>
+              }
+            />
+          </div>
+        </ThemeProvider>
+      );
+    };
+
+    ReactDOM.render(<App />, document.getElementById('app'));
+  </script>
+</body>
+</html>
