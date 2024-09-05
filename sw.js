@@ -1,4 +1,4 @@
-const CACHE_NAME = 'green-task-forest-v1';
+const CACHE_NAME = 'foresttask-v1';
 const urlsToCache = [
   '/',
   '/index.html',
