@@ -1,5 +1,13 @@
 # ForestTask
 
+LINK: https://mriago.me/ForestTasks
+
+ÍCONE (Para ser usado na imagem do projeto no portifólio):
+![Design sem nome (5)](https://github.com/user-attachments/assets/a1edb9de-11d3-4e53-9495-5e2559f41217)
+
+PRINT DA APLICAÇÃO (Para ser usado na imagem do da descrição do projeto portifólio):
+![Design sem nome (6)](https://github.com/user-attachments/assets/88aff3d5-28a4-460e-b3cd-87b7ec9a89e7)
+
 ForestTask é um aplicativo inovador de gerenciamento de tarefas que combina produtividade com gamificação, inspirado na beleza e tranquilidade da natureza.
 
 ## Sobre o Projeto
