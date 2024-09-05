@@ -1,5 +1,50 @@
 # ForestTask
-Aplicativo para gameficar a gestão de tempo
+
+ForestTask é um aplicativo inovador de gerenciamento de tarefas que combina produtividade com gamificação, inspirado na beleza e tranquilidade da natureza.
+
+## Sobre o Projeto
+
+ForestTask transforma a gestão do tempo em uma experiência envolvente e recompensadora. Ao completar tarefas, os usuários cultivam sua própria floresta virtual, incentivando hábitos produtivos e sustentáveis.
+
+### Principais Características
+
+- **Interface Intuitiva**: Design limpo e fácil de usar, inspirado em elementos naturais.
+- **Sistema de Gamificação**: Ganhe experiência e cultive sua floresta ao completar tarefas.
+- **Personalização**: Adapte suas listas de tarefas e metas de acordo com suas necessidades.
+- **Progresso Visual**: Acompanhe seu crescimento através da evolução da sua floresta virtual.
+
+## Como Usar
+
+1. Adicione suas tarefas diárias, semanais ou de longo prazo.
+2. Complete as tarefas para ganhar pontos e fazer sua floresta crescer.
+3. Acompanhe seu progresso e veja sua produtividade florescer!
+
+## Tecnologias Utilizadas
+
+- HTML5
+- CSS3
+- JavaScript
+- React
+- Material-UI
+
+## Instalação
+
+Para rodar o ForestTask localmente:
+
+1. Clone o repositório:
+   ```
+   git clone https://github.com/seu-usuario/foresttask.git
+   ```
+2. Abra o arquivo `index.html` em seu navegador.
+
+## Contribuições
+
+Contribuições são sempre bem-vindas! Sinta-se à vontade para abrir issues ou enviar pull requests.
+
+## Licença
+
+Este projeto está licenciado sob a [MIT License](LICENSE).
+
 
 To-do's:
 - 
