@@ -357,11 +357,14 @@
 
     const App = () => {
       const classes = useStyles();
-      const [level, setLevel] = React.useState(1);
-      const [day, setDay] = React.useState(1);
-      const [streak, setStreak] = React.useState(0);
-      const [progress, setProgress] = React.useState(0);
-      const [tasks, setTasks] = React.useState([]);
+      const [level, setLevel] = React.useState(() => parseInt(localStorage.getItem('level') || '1'));
+      const [day, setDay] = React.useState(() => parseInt(localStorage.getItem('day') || '1'));
+      const [streak, setStreak] = React.useState(() => parseInt(localStorage.getItem('streak') || '0'));
+      const [progress, setProgress] = React.useState(() => parseInt(localStorage.getItem('progress') || '0'));
+      const [tasks, setTasks] = React.useState(() => {
+        const savedTasks = localStorage.getItem('tasks');
+        return savedTasks ? JSON.parse(savedTasks) : [];
+      });
       const [openAddDialog, setOpenAddDialog] = React.useState(false);
       const [openEditDialog, setOpenEditDialog] = React.useState(false);
       const [editingTask, setEditingTask] = React.useState(null);
@@ -371,7 +374,7 @@
       const [snackbarMessage, setSnackbarMessage] = React.useState("");
       const [showEisenhowerMatrix, setShowEisenhowerMatrix] = React.useState(false);
       const [selectedTaskIndex, setSelectedTaskIndex] = React.useState(null);
-      const [darkMode, setDarkMode] = React.useState(false);
+      const [darkMode, setDarkMode] = React.useState(() => localStorage.getItem('darkMode') === 'true');
 
       const plantStages = ['🌱', '🌿', '🌳'];
 
@@ -618,6 +621,15 @@
         setDarkMode(!darkMode);
         document.body.classList.toggle('dark-mode');
       };
+
+      React.useEffect(() => {
+        localStorage.setItem('level', level.toString());
+        localStorage.setItem('day', day.toString());
+        localStorage.setItem('streak', streak.toString());
+        localStorage.setItem('progress', progress.toString());
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+        localStorage.setItem('darkMode', darkMode.toString());
+      }, [level, day, streak, progress, tasks, darkMode]);
 
       React.useEffect(() => {
         if (darkMode) {

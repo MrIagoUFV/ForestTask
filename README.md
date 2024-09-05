@@ -10,4 +10,7 @@ To-do's:
 
 Ideias de implementações futuras:
 -
+- Implementar memória para salvar o progresso	
 - Implementar uma sessão de estatística, com dashhboard completo, log diário, gráficos, etc.
+- Adicionar campo de detalhamento de tarefa, para que o usuário possa adicionar mais informações e criar um plano de ação mais assertivo
+- Adicionar funcionalidade de IA para sugerir um plano de ação com base na tarefa selecionada (auto-preenchimento do campo de detalhamento da tarefa)
