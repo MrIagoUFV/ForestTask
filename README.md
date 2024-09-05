@@ -60,6 +60,7 @@ Ideias de implementações futuras:
 [✅] Arrumar lógica do nível de experiência do usuário
 [  ] Adicionar campo de detalhamento de tarefa, para que o usuário possa adicionar mais informações e criar um plano de ação mais assertivo
 [  ] Adicionar funcionalidade de IA para sugerir um plano de ação com base na tarefa selecionada (auto-preenchimento do campo de detalhamento da tarefa)
+[  ] Adicionar login, para que os dados fiquem salvos e sincronizados entre diferentes dispositivos
 
 Crie um prompt para a IA criar uma imagem para a logo do projeto:
 
