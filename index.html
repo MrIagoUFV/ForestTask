@@ -622,6 +622,25 @@
         document.body.classList.toggle('dark-mode');
       };
 
+      const handleResetProgress = () => {
+        // Exibir um diálogo de confirmação
+        if (window.confirm("Tem certeza que deseja resetar todo o progresso? Esta ação não pode ser desfeita.")) {
+          // Resetar todos os estados
+          setLevel(1);
+          setDay(1);
+          setStreak(0);
+          setProgress(0);
+          setTasks([]);
+          
+          // Limpar o localStorage
+          localStorage.clear();
+          
+          // Exibir mensagem de confirmação
+          setSnackbarMessage("Progresso resetado com sucesso!");
+          setSnackbarOpen(true);
+        }
+      };
+
       React.useEffect(() => {
         localStorage.setItem('level', level.toString());
         localStorage.setItem('day', day.toString());
@@ -649,6 +668,9 @@
               <span>Nível: {level}</span>
               <span>Dia: {day}</span>
               <span>🌳: {streak}</span>
+              <IconButton color="inherit" onClick={handleResetProgress}>
+                <span className="material-icons">restart_alt</span>
+              </IconButton>
             </div>
             
             <div className="main-buttons">
