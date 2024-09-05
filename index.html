@@ -223,6 +223,82 @@
         display: none;
       }
     }
+
+    /* Estilos para o modo escuro */
+    body.dark-mode {
+      background-color: #1e1e1e;
+      color: #e0e0e0;
+    }
+
+    .dark-mode .top-bar {
+      background-color: #2d2d2d;
+      color: #e0e0e0;
+    }
+
+    .dark-mode .task-list-container {
+      background-color: #2d2d2d;
+    }
+
+    .dark-mode .task-item {
+      border-bottom: 1px solid #444;
+    }
+
+    .dark-mode .task-item:last-child {
+      border-bottom: none;
+    }
+
+    .dark-mode .task-item.completed {
+      color: #888;
+    }
+
+    .dark-mode .empty-task {
+      color: #666;
+    }
+
+    .dark-mode .matrix-section {
+      border-color: #444;
+    }
+
+    .dark-mode .priority {
+      color: #ff7961;
+      background-color: rgba(255, 121, 97, 0.1);
+    }
+
+    .dark-mode .necessary {
+      color: #64b5f6;
+      background-color: rgba(100, 181, 246, 0.1);
+    }
+
+    .dark-mode .postponable {
+      color: #81c784;
+      background-color: rgba(129, 199, 132, 0.1);
+    }
+
+    .dark-mode .disposable {
+      color: #bdbdbd;
+      background-color: rgba(189, 189, 189, 0.1);
+    }
+
+    .dark-mode .task-action-button.edit-button {
+      background-color: #2d2d2d;
+      color: #e0e0e0;
+    }
+
+    .dark-mode .task-action-button.delete-button {
+      background-color: #d32f2f;
+      color: #e0e0e0;
+    }
+
+    .dark-mode-toggle {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      color: inherit;
+      font-size: 24px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -295,6 +371,7 @@
       const [snackbarMessage, setSnackbarMessage] = React.useState("");
       const [showEisenhowerMatrix, setShowEisenhowerMatrix] = React.useState(false);
       const [selectedTaskIndex, setSelectedTaskIndex] = React.useState(null);
+      const [darkMode, setDarkMode] = React.useState(false);
 
       const plantStages = ['🌱', '🌿', '🌳'];
 
@@ -537,9 +614,25 @@
         );
       };
 
+      const toggleDarkMode = () => {
+        setDarkMode(!darkMode);
+        document.body.classList.toggle('dark-mode');
+      };
+
+      React.useEffect(() => {
+        if (darkMode) {
+          document.body.classList.add('dark-mode');
+        } else {
+          document.body.classList.remove('dark-mode');
+        }
+      }, [darkMode]);
+
       return (
         <ThemeProvider theme={theme}>
           <div>
+            <button className="dark-mode-toggle" onClick={toggleDarkMode}>
+              {darkMode ? '☀️' : '🌙'}
+            </button>
             <div className="top-bar">
               <span>Nível: {level}</span>
               <span>Dia: {day}</span>
