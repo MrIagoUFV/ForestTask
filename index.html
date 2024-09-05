@@ -357,7 +357,7 @@
 
     const App = () => {
       const classes = useStyles();
-      const [level, setLevel] = React.useState(() => parseInt(localStorage.getItem('level') || '1'));
+      const [level, setLevel] = React.useState(() => parseInt(localStorage.getItem('level') || '0'));
       const [day, setDay] = React.useState(() => parseInt(localStorage.getItem('day') || '1'));
       const [streak, setStreak] = React.useState(() => parseInt(localStorage.getItem('streak') || '0'));
       const [progress, setProgress] = React.useState(() => parseInt(localStorage.getItem('progress') || '0'));
@@ -421,22 +421,20 @@
         const relevantTasks = tasks.filter(task => task.priority === 'priority' || task.priority === 'necessary');
         const allRelevantTasksCompleted = relevantTasks.length > 0 && relevantTasks.every(task => task.completed);
         
+        setDay(d => d + 1);
+        
         if (allRelevantTasksCompleted) {
           setStreak(s => s + 1);
-          setDay(d => d + 1);
-          if ((streak + 1) % 5 === 0) {
-            setLevel(l => l + 1);
-          }
+          setLevel(l => l + 1); // Aumenta o nível em 1
           setProgress(0);
           setTasks([]);
-          setSnackbarMessage("Parabéns! Você completou todas as tarefas prioritárias e necessárias do dia!");
+          setSnackbarMessage("Parabéns! Você completou todas as tarefas prioritárias e necessárias do dia! Seu nível aumentou.");
         } else {
-          setLevel(1);
           setStreak(0);
+          setLevel(l => Math.max(0, l - 1)); // Diminui o nível em 1, mas não abaixo de zero
           setProgress(0);
           setTasks([]);
-          setDay(d => d + 1);
-          setSnackbarMessage("Você não completou todas as tarefas prioritárias e necessárias. O jogo foi reiniciado, mas o dia continua avançando.");
+          setSnackbarMessage("Você não completou todas as tarefas prioritárias e necessárias. Seu nível diminuiu.");
         }
         setSnackbarOpen(true);
       };
@@ -623,19 +621,15 @@
       };
 
       const handleResetProgress = () => {
-        // Exibir um diálogo de confirmação
         if (window.confirm("Tem certeza que deseja resetar todo o progresso? Esta ação não pode ser desfeita.")) {
-          // Resetar todos os estados
-          setLevel(1);
+          setLevel(0); // Reseta o nível para zero
           setDay(1);
           setStreak(0);
           setProgress(0);
           setTasks([]);
           
-          // Limpar o localStorage
           localStorage.clear();
           
-          // Exibir mensagem de confirmação
           setSnackbarMessage("Progresso resetado com sucesso!");
           setSnackbarOpen(true);
         }
