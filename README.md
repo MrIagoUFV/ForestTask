@@ -67,7 +67,7 @@ Crie um prompt para a IA criar uma imagem para a logo do projeto:
 
 ---
 
-LINK: https://mriago.me/ForestTasks
+LINK: https://mriago.me/ForestTask
 
 ÍCONE (Para ser usado na imagem do projeto no portifólio):
 
