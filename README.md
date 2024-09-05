@@ -65,6 +65,8 @@ Crie um prompt para a IA criar uma imagem para a logo do projeto:
 
 "Crie uma logo para um aplicativo de gerenciamento de tarefas chamado 'ForestTask'. A logo deve ser minimalista, com uma fonte clara e moderna. Use cores que reflitam a natureza e a tranquilidade, como verde, azul e branco. A logo deve ser simples, com um desenho de uma floresta, uma árvore, um rio e um céu azul. Adicione um subtítulo 'Organize sua vida' abaixo da logo. A logo deve ser criada em formato vetorial e em cores sólidas."
 
+---
+
 LINK: https://mriago.me/ForestTasks
 
 ÍCONE (Para ser usado na imagem do projeto no portifólio):
