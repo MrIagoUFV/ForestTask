@@ -1,6 +1,6 @@
 {
-  "name": "Green Task Forest",
-  "short_name": "Green Tasks",
+  "name": "ForestTask",
+  "short_name": "ForestTask",
   "icons": [
     {
       "src": "fav/android-chrome-192x192.png",
@@ -16,5 +16,5 @@
   "theme_color": "#ffffff",
   "background_color": "#ffffff",
   "display": "standalone",
-  "start_url": "/"
+  "start_url": "/ForestTask"
 }
